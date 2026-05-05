@@ -3,4 +3,4 @@ __pycache__
 *.pyo
 instance/
 .env
-*.pkl
+
