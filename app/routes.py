@@ -63,7 +63,7 @@ def logout():
 
 @app.route("/subscribe")
 @login_required
-def subscribed():
+def subscribe():
     client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
     order = client.order.create({"amount": 49900, "currency": "INR"})
     return render_template('subscribe.html', order=order, key=os.getenv("RAZORPAY_KEY_ID"))
