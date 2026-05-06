@@ -49,8 +49,11 @@ def dashboard():
         try:
             file = request.files['file']
             df = pd.read_csv(file)
-            model = joblib.load('churn_model.pkl')
-            X = df[["Age", "Salary", "Complaints"]]
+            model = joblib.load('telco_model.pkl')
+            columns = joblib.load('telco_columns.pkl')
+            X = df[["Tenure Months", "Monthly Charges", "Total Charges", "Contract", "Internet Service", "Payment Method"]]
+            X = pd.get_dummies(X)
+            X = X.reindex(columns=columns,fill_value=0)
             predictions = model.predict(X).tolist()
         except Exception as e:
             return f"Error: {str(e)}"
