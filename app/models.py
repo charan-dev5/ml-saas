@@ -5,5 +5,6 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(256))
+    is_paid = db.Column(db.Boolean, default=False)
     __tablename__ = 'users'
     

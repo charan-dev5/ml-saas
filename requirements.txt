@@ -8,3 +8,4 @@ joblib
 python-dotenv
 gunicorn
 psycopg2-binary
+razorpay

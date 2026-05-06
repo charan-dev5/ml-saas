@@ -1,0 +1,22 @@
+{% extends 'base.html'%}
+{% block content %}
+<h2>Subscribe to ML predict</h2>
+<p>₹499/month - Unlimited predictions</p>
+
+<button id="pay-btn">Pay ₹499</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    key: "{{key}}",
+    amount: "{{ order.amount }}",
+    currency: "INR",
+    order_id: "{{order.id}}",
+    handler: function(response) {
+        window.location.href = "/payment-success";
+    }
+}
+var rzp = new Razorpay(options);
+document.getElementById("pay-btn").onclick = function() { rzp.open(); }
+</script>
+{% endblock %}

@@ -1,10 +1,13 @@
 from flask import render_template,request, redirect, url_for
 from app import app, db
 from app.models import User
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 import joblib
+import razorpay
+import os
+
 
 @app.route("/")
 def index():
@@ -57,6 +60,20 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route("/subscribe")
+@login_required
+def subscribed():
+    client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
+    order = client.order.create({"amount": 49900, "currency": "INR"})
+    return render_template('subscribe.html', order=order, key=os.getenv("RAZORPAY_KEY_ID"))
+
+@app.route("/payment-success")
+@login_required
+def payment_success():
+    current_user.is_paid = True
+    db.session.commit()
+    return redirect(url_for('dashboard'))
 
 
 
