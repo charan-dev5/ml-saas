@@ -45,10 +45,13 @@ def login():
 @login_required
 def dashboard():
     predictions = None
+    if not current_user.is_paid:
+        return redirect(url_for('subscribe'))
     if request.method=="POST":
         try:
             file = request.files['file']
             df = pd.read_csv(file)
+            df = df.head(100)
             model = joblib.load('telco_model.pkl')
             columns = joblib.load('telco_columns.pkl')
             X = df[["Tenure Months", "Monthly Charges", "Total Charges", "Contract", "Internet Service", "Payment Method"]]
