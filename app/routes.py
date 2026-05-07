@@ -3,6 +3,8 @@ from app import app, db
 from app.models import User
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_mail import Message
+from app import mail
 import pandas as pd
 import joblib
 import razorpay
@@ -25,6 +27,12 @@ def register():
                         password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        msg = Message("Welcome to ML Predict", sender=os.getenv("MAIL_USERNAME"), recipients=[email])
+        msg.body = "Thank you for registering. Start predicting customer churn today."
+        try:
+            mail.send(msg)
+        except:
+            pass    
         return redirect(url_for('login'))
     return render_template('register.html')
 
@@ -45,6 +53,9 @@ def login():
 @login_required
 def dashboard():
     predictions = None
+    churn_count = 0
+    stay_count = 0
+    total = 0
     if not current_user.is_paid:
         return redirect(url_for('subscribe'))
     if request.method=="POST":
@@ -59,9 +70,12 @@ def dashboard():
             X = X.reindex(columns=columns,fill_value=0)
             predictions = model.predict(X).tolist()
             session['predictions'] = predictions
+            churn_count = predictions.count(1)
+            stay_count = predictions.count(0)
+            total = len(predictions)
         except Exception as e:
             return f"Error: {str(e)}"
-    return render_template('dashboard.html', predictions=predictions)    
+    return render_template('dashboard.html', predictions=predictions, churn_count=churn_count, stay_count=stay_count, total=total)    
 
 @app.route("/logout")
 def logout():

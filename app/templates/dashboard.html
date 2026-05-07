@@ -9,6 +9,26 @@
 </form>
 
 {% if predictions %}
+<h3>Results Summary</h3>
+<p>Total Customers: {{ total }}</p>
+<p>Will Churn: {{ churn_count }}</p>
+<p>Will Stay: {{ stay_count }}</p>
+<canvas id="churnChart" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('churnChart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Will Stay', 'Will Churn'],
+        datasets: [{
+            label: 'Customers',
+            data: [{{ stay_count }}, {{ churn_count }}],
+            backgroundColor: ['#36a2eb', '#ff6384']
+        }]
+    }
+});
+</script>
 <table>
     <tr><th>Prediction</th></tr>
     {% for item in predictions %}
