@@ -3,8 +3,6 @@ from app import app, db
 from app.models import User
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_mail import Message
-from app import mail
 import pandas as pd
 import joblib
 import razorpay
@@ -26,13 +24,7 @@ def register():
                         email=email,
                         password=hashed_password)
         db.session.add(new_user)
-        db.session.commit()
-        msg = Message("Welcome to ML Predict", sender=os.getenv("MAIL_USERNAME"), recipients=[email])
-        msg.body = "Thank you for registering. Start predicting customer churn today."
-        try:
-            mail.send(msg)
-        except:
-            pass    
+        db.session.commit()   
         return redirect(url_for('login'))
     return render_template('register.html')
 
