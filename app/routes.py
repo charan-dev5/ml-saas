@@ -107,8 +107,3 @@ def download():
     return response
 
 
-@app.route("/clear-users")
-def clear_users():
-    User.query.delete()
-    db.session.commit()
-    return "Users cleared"
