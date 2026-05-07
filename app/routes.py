@@ -1,4 +1,4 @@
-from flask import render_template,request, redirect, url_for
+from flask import render_template,request, redirect, url_for, session, make_response
 from app import app, db
 from app.models import User
 from flask_login import login_user, login_required, logout_user, current_user
@@ -58,6 +58,7 @@ def dashboard():
             X = pd.get_dummies(X)
             X = X.reindex(columns=columns,fill_value=0)
             predictions = model.predict(X).tolist()
+            session['predictions'] = predictions
         except Exception as e:
             return f"Error: {str(e)}"
     return render_template('dashboard.html', predictions=predictions)    
@@ -81,5 +82,14 @@ def payment_success():
     db.session.commit()
     return redirect(url_for('dashboard'))
 
+@app.route("/download")
+def download():
+    predictions = session.get('predictions', [])
+    df = pd.DataFrame(predictions, columns=['Churn Prediction'])
+    csv_data = df.to_csv(index=False)
+    response = make_response(csv_data)
+    response.headers['Content-Dispostion'] = 'attachment; filename=predictions.csv'
+    response.headers['Content-Type'] = 'text/csv'
+    return response
 
 
